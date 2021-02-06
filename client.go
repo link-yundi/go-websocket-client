@@ -46,7 +46,7 @@ type Client struct {
 	conn               *websocket.Conn
 	writeBuffer        chan []byte
 	closeMessageBuffer chan []byte
-	subs               [][]byte
+	Subs               [][]byte
 	reconnectLock      *sync.Mutex
 	waiter             *sync.WaitGroup
 	open               chan bool
@@ -211,7 +211,7 @@ func (client *Client) SendClose() {
 
 func (client *Client) Subscribe(data []byte) {
 	client.writeBuffer <- data
-	client.subs = append(client.subs, data)
+	client.Subs = append(client.Subs, data)
 }
 
 func (client *Client) Terminate() {
@@ -242,7 +242,7 @@ func (client *Client) reconnect(retry int) {
 		logger.Error("websocket-client retry reconnect fail. exiting....")
 		client.Terminate()
 	} else {
-		for _, sub := range client.subs {
+		for _, sub := range client.Subs {
 			logger.Info("re-subscribe: ", string(sub))
 			client.Send(sub)
 		}
